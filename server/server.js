@@ -7,6 +7,8 @@ const cors = require('cors');
 const app = express();
 const upload = require('./multer/uploadImage');
 const HistoryItem = require('./models/HistoryItem');
+const Disease = require('./models/Disease');
+
 import  startPrediction from './AI/classifier';
 app.use(cors());
 
@@ -21,13 +23,33 @@ app.use(cookieParser());
 
 
 
-app.get("/api/getDisease", (req, res) => {
+app.get("/api/disease", (req, res) => {
   let id = req.query.id;
 
   //model not created yet
-  Disease.findById(id, (err, doc) => {
+  Disease.findOne({disease_id: id}, (err, doc) => {
     if (err) return res.status(400).send(err);
     res.send(doc);
+  });
+});
+app.post("/api/disease", (req, res) => {
+  const disease = req.body;
+  /*const disease = {
+    disease_id: "gebr113",
+    title: "Esca Black rot",
+    category:"disease",
+    hosts:"Grape",
+    summary:"Grape black rot is a fungal disease caused by an ascomycetous fungus, Guignardia bidwellii, that attacks grape vines during hot and humid weather.  It can cause complete crop loss in warm, humid climates, but is virtually unknown in regions with arid summers. The name comes from the black fringe that borders growing brown patches on the leaves. The disease also attacks other parts of the plant,all green parts of the vine: the shoots, leaf and fruit stems, tendrils, and fruit.",
+    symptoms:"Relatively small, brown circular lesions develop on infected leaves and within a few days tiny black spherical fruiting bodies (pycnidia) protrude from them. Elongated black lesions on the petiole may eventually girdle these organs, causing the affected leaves to wilt. Shoot infection results in large black elliptical lesions. These lesions may contribute to breakage of shoots by wind, or in severe cases, may girdle and kill young shoots altogether. This fungus bides its time. Most plants show very little signs of infection until its too late. They will look very healthy until fruit sets. Even flowering will be normal",
+    treatment:"The use of chemical control is widely available for agricultural purposes. To apply chemical applications, look at the fungicide label for proper use. Be sure that the conditions are optimal to spray to avoid drift and inefficiencies of the fungicide due to application. Fungicide guidelines must be followed. There are a wide variety of chemicals that are available for both regular and organic growers. Commercially, application of fungicides may be costly. To cut down on costs, one must understand the life cycle of the pathogens. Different fungicides are more effective at certain infection stages.",
+    imageUrl:"/diseases/black_rot.jpg"
+  };*/
+  Disease.create(disease, (err, doc) => {
+    if (err) return res.status(400).send(err);
+    res.send({
+      success:true,
+      disease: doc
+    });
   });
 });
 
