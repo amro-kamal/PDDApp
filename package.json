@@ -11,13 +11,13 @@
     "dev": "concurrently \"npm run server\" \"npm run client\" "
   },
   "engines": {
-    "node": "10.15.0"
+    "node": "12.14.1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@tensorflow/tfjs": "^1.5.2",
-    "@tensorflow/tfjs-node": "^1.5.2",
+    "@tensorflow/tfjs-node": "1.5.2",
     "body-parser": "^1.19.0",
     "concurrently": "^4.1.2",
     "cookie-parser": "^1.4.4",

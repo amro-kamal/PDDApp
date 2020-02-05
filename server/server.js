@@ -1,4 +1,3 @@
-path = require('path');
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
@@ -8,7 +7,7 @@ const cors = require('cors');
 const app = express();
 const upload = require('./multer/uploadImage');
 const HistoryItem = require('./models/HistoryItem');
-
+import  startPrediction from './AI/classifier';
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -45,18 +44,23 @@ app.get("/api/history", (req, res) => {
 });
 
 // POST //
-app.post("/api/classify", upload.single('imageData'), (req, res) => {
+app.post("/api/classify", upload.single('imageData'), async (req, res) => {
 console.log(req.file)
   if(req.file){
     console.log('image was sent , inside image block');
       const pic = {
-        imageName: req.body.imageName,
+        imageName: req.file.filename,
         imageData: req.file.path
     };
-
+    const path = req.file.path;
     //classify image
+    let predictionResult = await startPrediction(path);
+    console.log('prediction reuslt', predictionResult);
+    res.json({
+        result: predictionResult
+    });
     
-    const data = {
+    /*const data = {
       title : '',//from classification 
       data:  Date.now(),
       disease_id: '',//from classification 
@@ -71,11 +75,11 @@ console.log(req.file)
               success: true,
               history_item: doc
           })
-      });
+      });*/
   
   }else{
       console.log('no image  sent , inside no image block');
-      res.status(200).send({
+      res.status(400).send({
         success: false,
         err: 'no image sent/file not valid'
     })
