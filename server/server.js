@@ -18,6 +18,7 @@ mongoose.connect(config.DATABASE , { useNewUrlParser: true });
 
 console.log(__dirname)
 app.use('/uploads' , express.static(__dirname + '/uploads'));
+app.use('/diseases' , express.static(__dirname + '/diseases'));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
@@ -79,7 +80,9 @@ console.log(req.file)
     let predictionResult = await startPrediction(path);
     console.log('prediction reuslt', predictionResult);
     res.json({
-        result: predictionResult
+        result: predictionResult,
+        imagePath: path ,   //important 
+        relativePath: "uploads/"+req.file.filename // relative path to fetch local images
     });
     
     /*const data = {

@@ -37,7 +37,7 @@ ImageRouter
     .post("/upload",upload.single('imageData'), (req, res, next) => {
         console.log(req.file)
         const newImage = new Image({
-            imageName: req.body.imageName,
+            imageName: req.file.filename,
             imageData: req.file.path
         });
 
