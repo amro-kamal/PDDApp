@@ -5,25 +5,20 @@ import { IMAGENET_CLASSES } from './labels/labels';
 const fs = require('fs');
 
 
-const mmm =
-    // tslint:disable-next-line:max-line-length
-    'https://storage.googleapis.com/tfjs-models/tfjs/mobilenet_v1_0.25_224/model.json';
-const CUSTOM_MODEL_PATH = '/models/weights_70%_vgg_01.h5';
+const CUSTOM_MODEL_PATH = '/tf_models/inception_model/model.json';
 
-const IMAGE_SIZE = 224;
+const IMAGE_SIZE = 140;
 const TOPK_PREDICTIONS = 1;
 
 let tfmodel;
 const startPrediction = async (image_path) => {
-    console.log('Loading model...');
     try {
         // Load custom model
         //tfmodel = await tf.loadLayersModel(mmm);
-        tfmodel =await tf.loadGraphModel("file://" + __dirname + CUSTOM_MODEL_PATH);
+        tfmodel =await tf.loadLayersModel("file://" + __dirname + CUSTOM_MODEL_PATH);
         //const handler = tf.io.fileSystem(__dirname +CUSTOM_MODEL_PATH);
          //tfmodel = await tf.loadLayersModel(handler);
          
-        
         console.log('Custom model loaded!')
     } 
     catch (err){
@@ -78,11 +73,11 @@ async function predict(data) {
         // Make a prediction through mobilenet.
         return tfmodel.predict(batched);
     });
-    return logits;
 
+    //return logits;
     // Convert logits to probabilities and class names.
     const predictions = await getTopKClasses(logits, TOPK_PREDICTIONS);
-    return predictions[0];
+    return getDisease(predictions[0]);
 }
 
 /**
@@ -122,6 +117,24 @@ async function predict(data) {
         })
     }
     return topClassesAndProbs;
+}
+
+function getDisease(res){
+    const {className , probability} = res;
+    let diseaseId = "gbr112";
+    switch(className){
+        case "black_rot":
+            diseaseId = "gbr112";
+            break;
+        default:
+            break;
+    }
+
+    return {
+        diseaseId,
+        confidence: probability
+    }
+
 }
 
 
