@@ -18,6 +18,11 @@ const HistoryItemSchema = mongoose.Schema({
         maxLength: 20,
         required: true
     },
+    confidence:{
+        type: String, 
+        maxLength: 20,
+        required: true
+    },
     pic:ImageSchema
     
 
