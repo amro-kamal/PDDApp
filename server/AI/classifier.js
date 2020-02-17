@@ -1,39 +1,21 @@
 
 import * as tf from '@tensorflow/tfjs-node';
+import { DISEASES } from './labels/diseases';
 
 import { IMAGENET_CLASSES } from './labels/labels';
 const fs = require('fs');
 
 
+
 const CUSTOM_MODEL_PATH = '/tf_models/inception_model/model.json';
 
-const IMAGE_SIZE = 140;
 const TOPK_PREDICTIONS = 1;
 
-let tfmodel;
-const startPrediction = async (image_path) => {
-    try {
-        // Load custom model
-        //tfmodel = await tf.loadLayersModel(mmm);
-        tfmodel =await tf.loadLayersModel("file://" + __dirname + CUSTOM_MODEL_PATH);
-        //const handler = tf.io.fileSystem(__dirname +CUSTOM_MODEL_PATH);
-         //tfmodel = await tf.loadLayersModel(handler);
-         
-        console.log('Custom model loaded!')
-    } 
-    catch (err){
-        console.log("loading failed :",err);
-        // Pretrained model
-        //mobilenet = await tf.loadLayersModel(MOBILENET_MODEL_PATH);
-        //console.log('Pretrained model loaded!')
-    }
-    // Warmup the model. This isn't necessary, but makes the first prediction
-    // faster. Call `dispose` to release the WebGL memory allocated for the return
-    // value of `predict`.
-    tfmodel.predict(tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3])).dispose();
+const startPrediction = async (tfmodel,image_path , IMAGE_SIZE) => {
+    
     try {
         const img = readImage(image_path);
-        return predict(img)
+        return predict(tfmodel  , img , IMAGE_SIZE)
     }
     catch (err) {
       console.log(err);
@@ -52,7 +34,7 @@ const readImage = path => {
  * Given an image element, makes a prediction through mobilenet returning the
  * probabilities of the top K classes.
  */
-async function predict(data) {
+async function predict(tfmodel, data , IMAGE_SIZE) {
     console.log('Predicting...');
     const logits = tf.tidy(() => {
         // returns a Tensor from an image data.
@@ -77,7 +59,9 @@ async function predict(data) {
     //return logits;
     // Convert logits to probabilities and class names.
     const predictions = await getTopKClasses(logits, TOPK_PREDICTIONS);
-    return getDisease(predictions[0]);
+    // getDisease(predictions[0]);
+    return predictions[0];
+
 }
 
 /**
@@ -122,13 +106,13 @@ async function predict(data) {
 function getDisease(res){
     const {className , probability} = res;
     let diseaseId = "gbr112";
-    switch(className){
-        case "black_rot":
+   /* switch(className){
+        case "bla":
             diseaseId = "gbr112";
             break;
         default:
             break;
-    }
+    }*/
 
     return {
         diseaseId,

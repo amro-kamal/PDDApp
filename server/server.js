@@ -8,6 +8,9 @@ const app = express();
 const upload = require('./multer/uploadImage');
 const HistoryItem = require('./models/HistoryItem');
 const Disease = require('./models/Disease');
+import MODEL_CODES from './AI/tf_models/allmodels';
+import * as tf from '@tensorflow/tfjs-node';
+
 
 import  startPrediction from './AI/classifier';
 app.use(cors());
@@ -23,6 +26,42 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 
+const loadModel = async (setModel , path )=>{
+  try {
+    // Load custom model
+    tf.ENV.set('WEBGL_PACK' , false);
+    setModel(await tf.loadLayersModel("file://" + __dirname + path));
+    console.log('Custom model loaded! '+path)
+  } 
+  catch (err){
+      console.log("loading failed :",err);
+  }
+
+}
+//load grape model
+let grape_model ;
+const GRAPE_PATH = "/AI/tf_models/inception_model/model.json";
+const GRAPE_IMAGE_SIZE = 140;
+const setGrapeModel = async(model)=>{
+  grape_model = model;
+}
+loadModel(setGrapeModel, GRAPE_PATH);
+//load tomato model
+let tomato_model ;
+const TOMATO_PATH = "/AI/tf_models/inception_model/model.json";
+const TOMATO_IMAGE_SIZE = 140;
+const setTomatoModel = async(model)=>{
+  tomato_model = model;
+}
+loadModel(setTomatoModel, TOMATO_PATH);
+//load potato model
+let potato_model ;
+const POTATO_PATH = "/AI/tf_models/inception_model/model.json";
+const POTATO_IMAGE_SIZE = 140;
+const setPotatoModel = async(model)=>{
+  potato_model = model;
+}
+loadModel(setPotatoModel, POTATO_PATH);
 
 app.get("/api/disease", (req, res) => {
   let id = req.query.id;
@@ -76,9 +115,28 @@ console.log(req.file)
         imageData: req.file.path
     };
     const path = req.file.path;
-    //classify image
-    let predictionResult = await startPrediction(path);
+
+    let predictionResult;
+    //select model then classify image
+    switch (req.body.model) {
+      case MODEL_CODES.TOMATO:
+        predictionResult = await startPrediction( tomato_model, path , TOMATO_IMAGE_SIZE);
+        break;
+      case MODEL_CODES.POTATO:
+        predictionResult = await startPrediction(potato_model, path , POTATO_IMAGE_SIZE);
+        break;
+      case MODEL_CODES.GRAPE:
+        predictionResult = await startPrediction(grape_model,path , GRAPE_IMAGE_SIZE);
+        break;
+    
+      default:
+        break;
+    }
+
     console.log('prediction reuslt', predictionResult);
+
+
+
     res.json({
         result: predictionResult,
         imagePath: path ,   //important 
