@@ -59,8 +59,8 @@ async function predict(tfmodel, data , IMAGE_SIZE) {
     //return logits;
     // Convert logits to probabilities and class names.
     const predictions = await getTopKClasses(logits, TOPK_PREDICTIONS);
-    // getDisease(predictions[0]);
-    return predictions[0];
+    return  getDisease(predictions[0]);
+    //return predictions[0];
 
 }
 
