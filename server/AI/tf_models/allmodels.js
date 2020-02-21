@@ -1,5 +1,5 @@
 export default {
-    TOMATO: "tomato_model",
-    GRAPE: "grape_model",
-    POTATO: "potato_model"
+    TOMATO: "TOMATO",
+    GRAPE: "GRAPE",
+    POTATO: "POTATO"
 }
