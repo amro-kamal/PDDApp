@@ -3,14 +3,12 @@ import * as tf from '@tensorflow/tfjs-node';
 import { DISEASES } from './labels/diseases';
 import MODEL_CODES from './tf_models/allmodels';
 
-import { GRAPE_CLASSES ,  TOMATO_CLASSES} from './labels/labels';
+import { GRAPE_CLASSES ,  TOMATO_CLASSES, PLANTS_CLASSES} from './labels/labels';
 const fs = require('fs');
 
 const TOPK_PREDICTIONS = 1;
 
-let grape_model ;
-let tomato_model ;
-let potato_model ;
+
 
 const startPrediction = async (model,image_path) => {
     
@@ -35,14 +33,15 @@ const readImage = path => {
  * Given an image element, makes a prediction through mobilenet returning the
  * probabilities of the top K classes.
  */
-async function predict(model, data) {
+async function predict(tfmodel, data) {
     console.log('Predicting...');
     const logits = tf.tidy(() => {
 
-    //select model
-    let tfmodel;
-    let IMAGE_SIZE = 140;
-    switch (model) {
+
+    let IMAGE_SIZE = 224;
+    
+
+    /*switch (model) {
         case MODEL_CODES.TOMATO:
             tfmodel = tomato_model;
             IMAGE_SIZE = TOMATO_IMAGE_SIZE;
@@ -60,7 +59,7 @@ async function predict(model, data) {
 
         default:
             break;
-        }
+        }*/
 
         // returns a Tensor from an image data.
         const img = tf.node.decodeImage(data)
@@ -113,20 +112,8 @@ async function predict(model, data) {
     }
 
     //select classes according to model type
-    let IMAGNET_CLASSES ;
-    switch (model) {
-        case MODEL_CODES.TOMATO:
-            IMAGNET_CLASSES = TOMATO_CLASSES;
-            break;
-        case MODEL_CODES.POTATO:
-            IMAGNET_CLASSES = TOMATO_CLASSES;
-            break;
-        case MODEL_CODES.GRAPE:
-            IMAGNET_CLASSES = GRAPE_CLASSES;
-            break;
-        default:
-            break;
-        }
+    let IMAGNET_CLASSES = PLANTS_CLASSES;
+    
 
     const topClassesAndProbs = [];
     let imageClass;
@@ -199,8 +186,8 @@ const loadModel = async (setModel , path )=>{
   
   }
   
-
-  const GRAPE_PATH = "/tf_models/inception_model/model.json";
+ 
+ /* const GRAPE_PATH = "/tf_models/inception_model/model.json";
   const GRAPE_IMAGE_SIZE = 140;
   const setGrapeModel = async(model)=>{
     grape_model = model;
@@ -224,6 +211,6 @@ const loadModel = async (setModel , path )=>{
     //load potato model
     loadModel(setPotatoModel, POTATO_PATH);
 
- }
+ }*/
 
 export default startPrediction;
