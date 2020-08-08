@@ -8,6 +8,7 @@
     "start": "node server/server.js",
     "server": "nodemon server/server.js --exec babel-node --presets babel-preset-env",
     "client": "npm run start --prefix client",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install npm && run build",
     "dev": "concurrently \"npm run server\" \"npm run client\" "
   },
   "engines": {

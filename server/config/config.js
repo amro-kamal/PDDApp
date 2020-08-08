@@ -1,10 +1,9 @@
 const config = {
     production:{
         SECRET: process.env.SECRET,
-        DATABASE: process.env.MONGO_URI,
+        DATABASE: process.env.MONGODB_URI,
     },
     default:{
-        SECRET: "HASHING_PASSWORD_123",
         DATABASE: "mongodb://localhost/PlantsApp",
     }
 }

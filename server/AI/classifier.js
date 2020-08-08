@@ -1,20 +1,21 @@
 
 import * as tf from '@tensorflow/tfjs-node';
-import { DISEASES } from './labels/diseases';
-import MODEL_CODES from './tf_models/allmodels';
 
-import { GRAPE_CLASSES ,  TOMATO_CLASSES, PLANTS_CLASSES} from './labels/labels';
+import {PLANTS_CLASSES} from './labels/labels';
 const fs = require('fs');
 
 const TOPK_PREDICTIONS = 1;
+const IMAGE_SIZE = 256;
+const RESNET_MODEL_PATH =    '/tf_models/tomato_model/model.json';
+let model; 
 
 
-
-const startPrediction = async (model,image_path) => {
+const startPrediction = async (image_path) => {
     
     try {
+        model = await tf.loadLayersModel("file://" + __dirname + RESNET_MODEL_PATH)
         const img = readImage(image_path);
-        return predict(model  , img )
+        return predict(model  , img );
     }
     catch (err) {
       console.log(err);
@@ -37,30 +38,6 @@ async function predict(tfmodel, data) {
     console.log('Predicting...');
     const logits = tf.tidy(() => {
 
-
-    let IMAGE_SIZE = 224;
-    
-
-    /*switch (model) {
-        case MODEL_CODES.TOMATO:
-            tfmodel = tomato_model;
-            IMAGE_SIZE = TOMATO_IMAGE_SIZE;
-            break;
-
-        case MODEL_CODES.POTATO:
-            tfmodel = potato_model;
-            IMAGE_SIZE = POTATO_IMAGE_SIZE;
-            break;
-
-        case MODEL_CODES.GRAPE:
-            tfmodel = grape_model;
-            IMAGE_SIZE = GRAPE_IMAGE_SIZE;
-            break;
-
-        default:
-            break;
-        }*/
-
         // returns a Tensor from an image data.
         const img = tf.node.decodeImage(data)
         const offset = tf.scalar(127.5);
@@ -82,7 +59,7 @@ async function predict(tfmodel, data) {
 
     //return logits;
     // Convert logits to probabilities and class names.
-    const predictions = await getTopKClasses(logits, model,TOPK_PREDICTIONS);
+    const predictions = await getTopKClasses(logits,TOPK_PREDICTIONS);
     //return  getDisease(predictions[0]);
     return predictions[0];
 
@@ -94,7 +71,7 @@ async function predict(tfmodel, data) {
  * @param logits Tensor representing the logits from MobileNet.
  * @param topK The number of top predictions to show.
  */
- async function getTopKClasses(logits,model, topK) {
+ async function getTopKClasses(logits, topK) {
     const values = await logits.data();
 
     const valuesAndIndices = [];
@@ -111,7 +88,6 @@ async function predict(tfmodel, data) {
         topkIndices[i] = valuesAndIndices[i].index;
     }
 
-    //select classes according to model type
     let IMAGNET_CLASSES = PLANTS_CLASSES;
     
 
@@ -187,30 +163,5 @@ const loadModel = async (setModel , path )=>{
   }
   
  
- /* const GRAPE_PATH = "/tf_models/inception_model/model.json";
-  const GRAPE_IMAGE_SIZE = 140;
-  const setGrapeModel = async(model)=>{
-    grape_model = model;
-  }
-  
-  const TOMATO_PATH = "/tf_models/tomato_model/model.json";
-  const TOMATO_IMAGE_SIZE = 256;
-  const setTomatoModel = async(model)=>{
-    tomato_model = model;
-  }
-  const POTATO_PATH = "/tf_models/inception_model/model.json";
-  const POTATO_IMAGE_SIZE = 140;
-  const setPotatoModel = async(model)=>{
-    potato_model = model;
-  }
- export function loadAllModels(){
-    //load grape model
-    loadModel(setGrapeModel, GRAPE_PATH);
-    //load tomato model
-    loadModel(setTomatoModel, TOMATO_PATH);
-    //load potato model
-    loadModel(setPotatoModel, POTATO_PATH);
-
- }*/
 
 export default startPrediction;
