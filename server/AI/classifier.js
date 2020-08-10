@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const TOPK_PREDICTIONS = 1;
 const IMAGE_SIZE = 256;
-const RESNET_MODEL_PATH =    '/tf_models/tomato_model/model.json';
+const RESNET_MODEL_PATH =    '/tf_models/Resnet Model/model.json';
 let model; 
 
 
