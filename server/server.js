@@ -5,14 +5,13 @@ const mongoose = require("mongoose");
 const config = require("./config/config").get(process.env.NODE_ENV);
 const cors = require("cors");
 const app = express();
-const upload = require("./multer/uploadImage");
-const HistoryItem = require("./models/HistoryItem");
-const Disease = require("./models/Disease");
-const User = require("./models/user");
-const bcrypt = require("bcrypt");
+const upload = require('./multer/uploadImage');
+const HistoryItem = require('./models/HistoryItem');
+const Disease = require('./models/Disease');
+import * as tf from '@tensorflow/tfjs-node';
 
-StartPrediction = require("./AI/classifier");
-// import StartPrediction from "./AI/classifier";
+import {idToName} from './AI/labels/labels'
+import  startPrediction from './AI/classifier';
 app.use(cors());
 
 mongoose.Promise = global.Promise;
@@ -46,7 +45,7 @@ app.post("/api/disease", (req, res) => {
     disease_id: "gebr113",
     title: "Esca Black rot",
     category:"disease",
-    hosts:"Grape",
+    plant:'Grape',
     summary:"Grape black rot is a fungal disease caused by an ascomycetous fungus, Guignardia bidwellii, that attacks grape vines during hot and humid weather.  It can cause complete crop loss in warm, humid climates, but is virtually unknown in regions with arid summers. The name comes from the black fringe that borders growing brown patches on the leaves. The disease also attacks other parts of the plant,all green parts of the vine: the shoots, leaf and fruit stems, tendrils, and fruit.",
     symptoms:"Relatively small, brown circular lesions develop on infected leaves and within a few days tiny black spherical fruiting bodies (pycnidia) protrude from them. Elongated black lesions on the petiole may eventually girdle these organs, causing the affected leaves to wilt. Shoot infection results in large black elliptical lesions. These lesions may contribute to breakage of shoots by wind, or in severe cases, may girdle and kill young shoots altogether. This fungus bides its time. Most plants show very little signs of infection until its too late. They will look very healthy until fruit sets. Even flowering will be normal",
     treatment:"The use of chemical control is widely available for agricultural purposes. To apply chemical applications, look at the fungicide label for proper use. Be sure that the conditions are optimal to spray to avoid drift and inefficiencies of the fungicide due to application. Fungicide guidelines must be followed. There are a wide variety of chemicals that are available for both regular and organic growers. Commercially, application of fungicides may be costly. To cut down on costs, one must understand the life cycle of the pathogens. Different fungicides are more effective at certain infection stages.",
@@ -105,12 +104,10 @@ app.post("/api/classify", upload.single("imageData"), async (req, res) => {
       imageData: "uploads/" + req.file.filename
     };
     const path = req.file.path;
-    const filename = req.file.filename;
-    //classify image
-    let predictionResult = await StartPrediction.StartPrediction(path);
-    // let predictionResult = await StartPrediction(path);
 
-    console.log("prediction reuslt", predictionResult);
+    let predictionResult = await startPrediction(path);
+    console.log('prediction reuslt', predictionResult);
+
     res.json({
       success: true,
       result: predictionResult,
@@ -179,6 +176,29 @@ app.post("/api/register", (req, res) => {
           }
         });
       }
+    
+    const {diseaseId, confidence} = predictionResult
+    const hitem = {
+      title : idToName[diseaseId],//from classification 
+      data:  getDate(),
+      diseaseId,//from classification 
+      confidence,
+      pic
+    };
+    //enter data in history collection
+    HistoryItem.create(hitem ,(err , doc)=>{
+          if(err) return res.status(400).send({success:false, err});
+          console.log('item stored successfully', {
+              success: true,
+              history_item: doc
+          })
+      });
+  
+  }else{
+      console.log('no image  sent , inside no image block');
+      res.status(400).send({
+        success: false,
+        err: 'no image sent/file not valid'
     })
 
     .catch(e => {
@@ -252,3 +272,17 @@ console.log("running on port", port);
 app.listen(port, () => {
   console.log(`SERVER RUNNNING`);
 });
+
+
+const getDate = ()=>{
+  const date = new Date();
+  const curDay = date.getDay();
+  const curMonth = date.getMonth();
+  const curYear = date.getFullYear();
+  const curHour = date.getHours() > 12 ? date.getHours() - 12 : (date.getHours() < 10 ? "0" + date.getHours() : date.getHours());
+  const curMinute = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+  const curMeridiem = date.getHours() > 12 ? "PM" : "AM";
+  
+  const today=  `${curYear}-${curMonth}-${curDay} ${curHour}:${curMinute}${curMeridiem}`;
+  return today;
+}

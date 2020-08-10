@@ -8,6 +8,7 @@
     "start": "nodemon server/server.js",
     "server": "nodemon server/server.js --exec babel-node --presets babel-preset-env",
     "client": "npm run start --prefix client",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install npm && run build",
     "dev": "concurrently \"npm run server\" \"npm run client\" "
   },
   "engines": {
@@ -21,7 +22,7 @@
     "bcrypt": "^4.0.0",
     "body-parser": "^1.19.0",
     "concurrently": "^4.1.2",
-    "cookie-parser": "^1.4.4",
+    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "gridfs-stream": "^1.1.1",
@@ -32,13 +33,13 @@
     "multer-gridfs-storage": "^4.2.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.8.4",
-    "@babel/preset-env": "^7.8.4",
-    "@babel/register": "^7.8.3",
+    "@babel/core": "^7.11.1",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/register": "^7.10.5",
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
-    "babel-loader": "^8.0.6",
+    "babel-loader": "^8.1.0",
     "babel-preset-env": "^1.7.0",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.4"
   }
 }
