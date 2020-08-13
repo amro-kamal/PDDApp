@@ -98,7 +98,7 @@ console.log(req.file)
     };
     //enter data in history collection
     HistoryItem.create(hitem ,(err , doc)=>{
-          if(err) return res.status(400).send({success:false, err});
+          if(err) return console.log('failed saving history item');
           console.log('item stored successfully', {
               success: true,
               history_item: doc
