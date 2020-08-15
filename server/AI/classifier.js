@@ -5,21 +5,21 @@ import {PLANTS_CLASSES} from './labels/labels';
 const fs = require('fs');
 
 const TOPK_PREDICTIONS = 1;
-const IMAGE_SIZE = 256;
-const RESNET_MODEL_PATH =    '/tf_models/Resnet Model/model.json';
+const IMAGE_SIZE = 224;
+const MOBILENET_MODEL_PATH =    '/tf_models/mobilenet model/model.json';
 let model; 
 
 
 const startPrediction = async (image_path) => {
     
     try {
-        model = await tf.loadLayersModel("file://" + __dirname + RESNET_MODEL_PATH)
+        model = await tf.loadLayersModel("file://" + __dirname + MOBILENET_MODEL_PATH)
         const img = readImage(image_path);
         return predict(model  , img );
     }
     catch (err) {
       console.log(err);
-      const fake = {"result":{"className":"Creme brulee","probability":0.9998493194580078}};
+      const fake = {"result":{"className":"Fake Creme brulee","probability":0.2298493194580078}};
       return fake;
     }
 };
