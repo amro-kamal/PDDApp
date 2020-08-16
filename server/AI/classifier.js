@@ -6,14 +6,14 @@ const fs = require('fs');
 
 const TOPK_PREDICTIONS = 1;
 const IMAGE_SIZE = 224;
-const MOBILENET_MODEL_PATH =    '/tf_models/mobilenet model/model.json';
+const RESNET_MODEL_PATH =    '/tf_models/Resnet Model/model.json';
 let model; 
 
 
 const startPrediction = async (image_path) => {
     
     try {
-        model = await tf.loadLayersModel("file://" + __dirname + MOBILENET_MODEL_PATH)
+        model = await tf.loadLayersModel("file://" + __dirname + RESNET_MODEL_PATH)
         const img = readImage(image_path);
         return predict(model  , img );
     }
