@@ -30,7 +30,7 @@ app.get("/api/disease", (req, res) => {
   let id = req.query.id;
 
   //model not created yet
-  Disease.findOne({disease_id: id}, (err, doc) => {
+  Disease.findOne({diseaseId: id}, (err, doc) => {
     if (err) return res.status(400).send(err);
     res.send(doc);
   });
@@ -38,7 +38,7 @@ app.get("/api/disease", (req, res) => {
 app.post("/api/disease", (req, res) => {
   const disease = req.body;
   /*const disease = {
-    disease_id: "gebr113",
+    diseaseId: "gebr113",
     title: "Esca Black rot",
     category:"disease",
     plant:'Grape',
@@ -97,13 +97,13 @@ console.log(req.file)
       pic
     };
     //enter data in history collection
-    HistoryItem.create(hitem ,(err , doc)=>{
+   /* HistoryItem.create(hitem ,(err , doc)=>{
           if(err) return console.log('failed saving history item');
           console.log('item stored successfully', {
               success: true,
               history_item: doc
           })
-      });
+      });*/
   
   }else{
       console.log('no image  sent , inside no image block');
