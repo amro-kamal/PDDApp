@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 
 const DiseaseSchema = mongoose.Schema({
-    disease_id:{
+    diseaseId:{
         type: String, 
         maxLength: 20,
         required: true,

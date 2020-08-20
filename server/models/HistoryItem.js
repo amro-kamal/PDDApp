@@ -13,7 +13,7 @@ const HistoryItemSchema = mongoose.Schema({
         maxLength: 60,
         required: true
     },
-    disease_id:{
+    diseaseId:{
         type: String, 
         maxLength: 20,
         required: true
