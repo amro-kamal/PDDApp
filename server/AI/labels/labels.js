@@ -1,4 +1,4 @@
-export const PLANTS_CLASSES = {
+const PLANTS_CLASSES = {
   0: "asc1", //'Apple___Apple_scab-1000',
   1: "abr1", //'Apple___Black_rot-1000',
   2: "acr1", //'Apple___Cedar_apple_rust-1000',
@@ -27,7 +27,9 @@ export const PLANTS_CLASSES = {
   25: "th5", //'Tomato___healthy-1591'
 };
 
-export const idToName = {
+exports.PLANTS_CLASSES = PLANTS_CLASSES;
+
+const idToName = {
   asc1: "Apple scab", //'Apple___Apple_scab-1000',
   abr1: "Black rot", //'Apple___Black_rot-1000',
   acr1: "Apple cedar rust", //'Apple___Cedar_apple_rust-1000',
@@ -54,3 +56,5 @@ export const idToName = {
   tmv5: "mosaic virus", //'Tomato___Tomato_mosaic_virus-1000',
   th5: "healthy", //'Tomato___healthy-1591'
 };
+
+exports.idToName = idToName;
