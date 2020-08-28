@@ -144,6 +144,41 @@ app.post("/api/history", (req, res) => {
 });
 
 app.get("/api/history", (req, res) => {
+
+    const user_email = req.body.user_email;
+    const user = await User.findOne({ email: user_email });
+    const history = user.history;
+    console.log("user history ", history);
+    history.forEach(history_item => {
+      var filename = history_item.pic
+      // open the mongodb connection with the connection
+  // string stored in the variable called url.
+  MongoClient.connect(
+    DBuri,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    },
+    function (err, db) {
+      var dbo = db.db("plant-app-database");
+      // perform a mongodb search and return only one result.
+      // convert the variabvle called filename into a valid
+      // objectId.
+      dbo
+        .collection("images")
+        .findOne({ filename:"" }, function (err, results) {
+          // set the http response header so the browser knows this
+          // is an 'image/jpeg' or 'image/png'
+          res.setHeader("content-type", results.contentType);
+          // send only the base64 string stored in the img object
+          // buffer element
+          res.send(results.img.buffer);
+        });
+    }
+  );
+    });
+     
+  
   HistoryItem.find()
     .sort({ _id: order })
     .exec((err, doc) => {
