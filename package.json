@@ -5,8 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
-    "server": "nodemon server.js --exec babel-node --presets babel-preset-env --experimental-modules",
+    "start": "node server.js",
+    "server": "node server.js --exec babel-node --presets babel-preset-env --experimental-modules",
     "client": "npm run start --prefix client",
     "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install npm && run build",
     "dev": "concurrently \"npm run server\" \"npm run client\" "
