@@ -122,8 +122,135 @@ app.get("/api/allusers", (req, res) => {
   });
 });
 
-app.post("/api/history", (req, res) => {
-  const historyItem = req.body;
+app.post("/api/history", async (req, res) => {
+  console.log("historyyyyyyyyyyyyyyyyyyyyyyyyyyy");
+
+  const user_email = req.body.email;
+
+  console.log("history for", user_email);
+
+  User.findOne({ email: user_email }, (error, user) => {
+    // console.log("user profile", user);
+
+    const history = user.history;
+    console.log("user history ", history);
+
+    // open the mongodb connection with the connection
+    // string stored in the variable called url.
+    // MongoClient.connect(
+    //   DBuri,
+    //   {
+    //     useNewUrlParser: true,
+    //     useUnifiedTopology: true,
+    //   },
+    //   function (err, db) {
+    //     var dbo = db.db("plant-app-database");
+    //     console.log("history mongoooooooooooooooooooo");
+    //     // perform a mongodb search and return only one result.
+    //     // convert the variabvle called filename into a valid
+    //     // objectId.
+
+    //     var i;
+    //     var filename = [];
+    //     for (i = 0; i < history.length; i++) {
+    //       console.log("i= ", i);
+    //       // await history.forEach((history_item) => {
+
+    //       ///////////////////////////////////////////
+    //       try {
+    //         dbo
+    //           .collection("images")
+    //           .findOne({ filename: history[i].pic }, function (err, result) {
+    //             if (err) console.log("images.find error ", err);
+    //             else {
+    //               // set the http response header so the browser knows this
+    //               // is an 'image/jpeg' or 'image/png'
+    //               // res.setHeader("content-type", result.contentType);
+    //               // send only the base64 string stored in the img object
+    //               // buffer element
+    //               // res.send(result.img.buffer);
+    //               console.log("findone i=", i);
+    //               console.log("images.find ", result);
+    //               history[i].pic = result;
+    //             }
+    //           });
+    //       } catch {}
+
+    //       /////////////////////////////////////////
+    //       // });
+    //     }
+    //   }
+    // );
+
+    //   (async () => {
+    //     let client = await MongoClient.connect(DBuri, {
+    //       useNewUrlParser: true,
+    //       useUnifiedTopology: true,
+    //     });
+
+    //     let db = client.db("plant-app-database");
+    //     console.log("history mongoooooooooooooooooooo");
+
+    //     var i;
+    //     try {
+    //       for (i = 0; i < history.length; i++) {
+    //         console.log("i= ", i);
+    //         const image = await db
+    //           .collection("images")
+    //           .findOne({ filename: history[i].pic });
+
+    //         // console.log(`res => ${JSON.stringify(res)}`);
+    //         console.log("findone i=", i);
+    //         console.log("images.find ", image);
+    //         // imgcopy = { ...image };
+    //         // imgcopy.img.buffer = imgcopy.img.buffer.toString;
+    //         history[i].pic = image;
+    //       }
+    //       console.log("modified history");
+    //       return res.json({ history: history });
+    //     } finally {
+    //       client.close();
+    //     }
+    //   })().catch((err) => console.error(err));
+    // });
+
+    (async () => {
+      // let client = await MongoClient.connect(DBuri, {
+      //   useNewUrlParser: true,
+      //   useUnifiedTopology: true,
+      // });
+
+      // let db = client.db("plant-app-database");
+      console.log("history mongoooooooooooooooooooo");
+
+      var i;
+      try {
+        for (i = 0; i < history.length; i++) {
+          console.log("i= ", i);
+          const image = await Image.findOne({ filename: history[i].pic });
+          // console.log(`res => ${JSON.stringify(res)}`);
+          console.log("findone i=", i);
+          console.log("images.find ", image);
+          // imgcopy = { ...image };
+          // imgcopy.img.buffer = imgcopy.img.buffer.toString;
+          history[i].pic = image;
+        }
+
+        console.log("modified history");
+        return res.send({ history: history });
+      } finally {
+        // client.close();
+      }
+    })().catch((err) => console.error(err));
+  });
+
+  // HistoryItem.find()
+  //   .sort({ _id: order })
+  //   .exec((err, doc) => {
+  //     if (err) return res.status(400).send(err);
+  //     res.send(doc);
+  //   });
+
   /*const disease = {
     disease_id: "gebr113",
     title: "Esca Black rot",
@@ -134,57 +261,60 @@ app.post("/api/history", (req, res) => {
     treatment:"The use of chemical control is widely available for agricultural purposes. To apply chemical applications, look at the fungicide label for proper use. Be sure that the conditions are optimal to spray to avoid drift and inefficiencies of the fungicide due to application. Fungicide guidelines must be followed. There are a wide variety of chemicals that are available for both regular and organic growers. Commercially, application of fungicides may be costly. To cut down on costs, one must understand the life cycle of the pathogens. Different fungicides are more effective at certain infection stages.",
     imageUrl:"/diseases/black_rot.jpg"
   };*/
-  HistoryItem.create(historyItem, (err, doc) => {
-    if (err) return res.status(400).send(err);
-    res.send({
-      success: true,
-      historyItem: doc,
-    });
-  });
+  // HistoryItem.create(historyItem, (err, doc) => {
+  //   if (err) return res.status(400).send(err);
+  //   res.send({
+  //     success: true,
+  //     historyItem: doc,
+  //   });
+  // });
 });
 
 app.get("/api/history", (req, res) => {
+  const user_email = req.body.user_email;
 
-    const user_email = req.body.user_email;
-    const user = await User.findOne({ email: user_email });
-    const history = user.history;
-    console.log("user history ", history);
-    history.forEach(history_item => {
-      var filename = history_item.pic
-      // open the mongodb connection with the connection
-  // string stored in the variable called url.
-  MongoClient.connect(
-    DBuri,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    },
-    function (err, db) {
-      var dbo = db.db("plant-app-database");
-      // perform a mongodb search and return only one result.
-      // convert the variabvle called filename into a valid
-      // objectId.
-      dbo
-        .collection("images")
-        .findOne({ filename:"" }, function (err, results) {
-          // set the http response header so the browser knows this
-          // is an 'image/jpeg' or 'image/png'
-          res.setHeader("content-type", results.contentType);
-          // send only the base64 string stored in the img object
-          // buffer element
-          res.send(results.img.buffer);
-        });
-    }
-  );
-    });
-     
-  
-  HistoryItem.find()
-    .sort({ _id: order })
-    .exec((err, doc) => {
-      if (err) return res.status(400).send(err);
-      res.send(doc);
-    });
+  console.log("history for", user_email);
+
+  const user = User.findOne({ email: user_email });
+  const history = user.history;
+  console.log("user history ", history);
+  history.forEach((history_item) => {
+    var filename = history_item.pic;
+    // open the mongodb connection with the connection
+    // string stored in the variable called url.
+    MongoClient.connect(
+      DBuri,
+      {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      },
+      function (err, db) {
+        var dbo = db.db("plant-app-database");
+        // perform a mongodb search and return only one result.
+        // convert the variabvle called filename into a valid
+        // objectId.
+        dbo
+          .collection("images")
+          .findOne({ filename: filename }, function (err, result) {
+            // set the http response header so the browser knows this
+            // is an 'image/jpeg' or 'image/png'
+            // res.setHeader("content-type", result.contentType);
+            // send only the base64 string stored in the img object
+            // buffer element
+            // res.send(result.img.buffer);
+            history_item.pic = result;
+          });
+      }
+    );
+  });
+
+  res.json({ history: history });
+  // HistoryItem.find()
+  //   .sort({ _id: order })
+  //   .exec((err, doc) => {
+  //     if (err) return res.status(400).send(err);
+  //     res.send(doc);
+  //   });
 });
 
 // POST //
